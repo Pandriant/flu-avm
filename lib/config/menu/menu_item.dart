@@ -18,7 +18,7 @@ const appMenuItems = <MenuItem>[
   MenuItem(
     titulus: 'Contador',
     subtitulus: 'Introducción a Riverpod',
-    link: '/numerator-river',
+    link: '/numerator-riverpod',
     icon: Icons.add
   ),
   MenuItem(

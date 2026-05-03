@@ -8,12 +8,12 @@ class DomusScreen extends StatelessWidget {
   const DomusScreen ({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    // TODO: implement build
+  Widget build(BuildContext context) { 
     return Scaffold(
       appBar: AppBar(
         title: Text('Flu Avm App'),
       ),
+      body: const _DomusView(),
     );
   }
 }
