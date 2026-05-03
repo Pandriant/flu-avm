@@ -7,9 +7,11 @@ class AppTheme {
     this.electusColor = const Color(0xFF1E1C36)
   });
 
-  ThemeData getTheme() {
-    return ThemeData(
+  ThemeData getTheme() => ThemeData (
+    
       colorSchemeSeed: electusColor,
-    );
-  }
+      appBarTheme: AppBarTheme(
+        centerTitle: false,
+      )
+  );
 }
