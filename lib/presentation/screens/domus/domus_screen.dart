@@ -2,16 +2,36 @@ import 'package:flutter/material.dart';
 import 'dart:math' as math;
 
 import 'package:flutter_application_1/config/config.dart';
+import 'package:flutter_application_1/presentation/providers/modus_provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-class DomusScreen extends StatelessWidget {
+class DomusScreen extends ConsumerWidget {
   const DomusScreen ({super.key});
 
   @override
-  Widget build(BuildContext context) { 
+  Widget build(BuildContext context, WidgetRef ref) { 
+
+    final bool estTenebrisModus = ref.watch(estTenebrisModusProvider);
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Flu Avm App'),
+        actions: [
+            IconButton(
+              onPressed: () {
+                ref.read( estTenebrisModusProvider.notifier).update((state)=> !estTenebrisModus);
+              },
+              
+
+               
+              icon: Icon(
+                estTenebrisModus
+                 ? Icons.dark_mode_outlined 
+                 : Icons.light_mode_outlined
+                )
+              )
+        ],
       ),
       body: const _DomusView(),
     );
@@ -52,7 +72,7 @@ final MenuItem menuItem;
       subtitle: Text(menuItem.subtitulus),
       trailing: Icon (Icons.arrow_forward_ios_rounded, color: colorum.primary),
       leading: CircleAvatar(
-        backgroundColor: Color.fromARGB(100, 
+        backgroundColor: Color.fromARGB(Theme.of(context).brightness == Brightness.dark ? 200 : 100, 
                                         math.Random().nextInt(256), 
                                         math.Random().nextInt(256), 
                                         math.Random().nextInt(256)
