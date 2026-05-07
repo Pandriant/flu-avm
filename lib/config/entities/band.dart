@@ -20,6 +20,4 @@ class Band {
       numerusVotum: numerusVotum ?? this.numerusVotum,
       );
   }
-
-
 }

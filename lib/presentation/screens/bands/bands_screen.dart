@@ -5,64 +5,119 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../config/entities/band.dart';
 import '../../../config/config.dart';
 import 'package:go_router/go_router.dart';
+import '../../providers/pie_chart.dart';
 
 
 class BandsScreen extends ConsumerWidget {
   const BandsScreen({super.key});
 
+  
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final bands = ref.watch(BandsProvider);
-    
+    final bands = ref.watch(bandsProvider);
     return Scaffold(
-        appBar: AppBar(
-          title: Text('Bandas'),
-        ),
-        body: ListView.builder(
-          itemCount: bands.length,
-          itemBuilder: (context, i) {
-              return _bandTile(context, ref, bands[i]);
-            
-          
-          },
-        ),
-           floatingActionButton: FloatingActionButton(
-            child: Icon(Icons.add),
-            onPressed: ()=> addereNovumBand(context, ref),
-            ),
-    );   
-  }
+      appBar: AppBar(
+        title: Text('Bandas'),
+      ),
   
-  Widget _bandTile (BuildContext context, WidgetRef ref, Band band) {
-
-  return Dismissible(
-    key: Key(band.id),
-    direction: DismissDirection.startToEnd,
-    onDismissed: (direction) {
-      ref.read(BandsProvider.notifier);
-    },
-    background: Container(
-      padding: EdgeInsets.only(left: 8.0),
-      color: Colors.red,
-      child: Align(
-        alignment: Alignment.centerLeft,
-        child:Text('Delete Band', style: TextStyle(color: Colors.white),),
-      )
-    ),
-    child: ListTile (
-    
-              leading: CircleAvatar(
-                child: Text(band.nomen.substring(0,2).toUpperCase()),
-              ),
-              title: Text (band.nomen),
-              trailing: Text('${band.numerusVotum}', style: TextStyle(fontSize: 20),),
-              onTap: () {
-                ref.read(BandsProvider.notifier).addereVotum(band);
-              },
+      body: Column(
+        children: [
+          _videreData(bands),
+          const SizedBox(height: 20,),
+          Expanded(
+            child: ListView.builder(
+              itemCount: bands.length,
+              itemBuilder: (context, i) => _bandTile(context, ref, bands[i]),
             ),
-  );
-          }
+          ),
+        ],
+      ),
+      floatingActionButton: Visibility(
+        visible: bands.length < 7 ? true : false,
+        child: FloatingActionButton(
+          elevation: 1,
+          onPressed: () => addereNovmBan(context, ref),
+          child: Icon(Icons.add),
+        ),
+      ),
+    );
+  }
 
+Widget _videreData( List<Band> bands ) {
+
+    // ignore: prefer_collection_literals
+  Map<String, double> dataMap = Map(); 
+
+  for (var band in bands) { 
+    dataMap.putIfAbsent(band.nomen, () => band.numerusVotum.toDouble() );
+  }
+
+  final List<Color> colorList = [
+    Colors.pink.shade100,
+    Colors.pink.shade300,
+    Colors.blue.shade200,
+    Colors.blue.shade600,
+    Colors.lightGreen.shade200,
+    Colors.lightGreen.shade600,
+  ];
+  
+  return dataMap.isNotEmpty ? Container(
+    padding: const EdgeInsets.only(left: 5, top: 5),
+    width: double.infinity,
+    height: 200.0,
+    child: PieChart(
+      dataMap: dataMap,
+      animationDuration: const Duration(milliseconds: 800),
+      colorList: colorList,
+      chartType: ChartType.ring,
+      legendOptions: const LegendOptions(
+        showLegendsInRow: false,
+        legendPosition: LegendPosition.right,
+        showLegends: true,
+        legendTextStyle: TextStyle(
+          fontWeight: FontWeight.bold,
+          fontFamily: "CupertinoSystemText", fontSize: 17,
+        ),
+      ),
+      chartValuesOptions: ChartValuesOptions(
+        showChartValues: dataMap.length <= 6, // con más de 6 no se ve el valor
+        showChartValueBackground: true,
+        showChartValuesInPercentage: false,
+        showChartValuesOutside: false,
+      ),
+    ),
+  ) : const LinearProgressIndicator();
+}
+
+
+  Widget _bandTile(BuildContext context, WidgetRef ref, Band band) {
+    return Dismissible(
+      key: Key(band.id),
+      direction: DismissDirection.startToEnd,
+      onDismissed: (direction) {
+        ref.read(bandsProvider.notifier).delereBand(band);
+      },
+      background: Container(
+        padding: EdgeInsets.only(left: 8),
+        color: Colors.red,
+        child: Align(
+          alignment: Alignment.centerLeft,
+          child: Text('Delete band', style: TextStyle(color: Colors.white)),
+        ),
+      ),
+      child: ListTile(
+        leading: CircleAvatar(
+          child: Text(band.nomen.substring(0, 2).toUpperCase()),
+        ),
+        title: Text(band.nomen),
+        trailing: Text('${ band.numerusVotum }', style: TextStyle(fontSize: 20)),
+        onTap: () {
+          ref.read(bandsProvider.notifier).addereVotum(band);
+        },
+      ),
+    );
+  }
+}
 addereNovumBand(BuildContext context, WidgetRef ref) {
 
   final TextEditingController textumController = TextEditingController();
