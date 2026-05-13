@@ -15,10 +15,24 @@ class BandsScreen extends ConsumerWidget {
   
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+
     final bandsState = ref.watch(bandsProvider);
+
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Bandas'),
+        actions: [
+          Container(
+            margin: const EdgeInsets.only(right: 10),
+            child: Icon(
+              Icons.check_circle,
+              color: bandsState.serverStatus == ServerStatus.Online 
+                ? Colors.green
+                : Colors.red,
+            ),
+          )
+        ],
       ),
   
       body: Column(
@@ -185,7 +199,7 @@ addereNovumBand(BuildContext context, WidgetRef ref) {
    //     );
    //   }
       
-  }
+  
 
 
 
