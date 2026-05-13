@@ -5,7 +5,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../config/entities/band.dart';
 import '../../../config/config.dart';
 import 'package:go_router/go_router.dart';
-import '../../providers/pie_chart.dart';
+import 'package:pie_chart/pie_chart.dart';
+
 
 
 class BandsScreen extends ConsumerWidget {
@@ -14,7 +15,7 @@ class BandsScreen extends ConsumerWidget {
   
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final bands = ref.watch(bandsProvider);
+    final bandsState = ref.watch(bandsProvider);
     return Scaffold(
       appBar: AppBar(
         title: Text('Bandas'),
@@ -22,21 +23,21 @@ class BandsScreen extends ConsumerWidget {
   
       body: Column(
         children: [
-          _videreData(bands),
+          _videreData(bandsState.bands),
           const SizedBox(height: 20,),
           Expanded(
             child: ListView.builder(
-              itemCount: bands.length,
-              itemBuilder: (context, i) => _bandTile(context, ref, bands[i]),
+              itemCount: bandsState.bands.length,
+              itemBuilder: (context, i) => _bandTile(context, ref, bandsState.bands[i]),
             ),
           ),
         ],
       ),
       floatingActionButton: Visibility(
-        visible: bands.length < 7 ? true : false,
+        visible: bandsState.bands.length < 7 ? true : false,
         child: FloatingActionButton(
           elevation: 1,
-          onPressed: () => addereNovmBan(context, ref),
+          onPressed: () => addereNovumBand(context, ref),
           child: Icon(Icons.add),
         ),
       ),
@@ -95,7 +96,7 @@ Widget _videreData( List<Band> bands ) {
       key: Key(band.id),
       direction: DismissDirection.startToEnd,
       onDismissed: (direction) {
-        ref.read(bandsProvider.notifier).delereBand(band);
+        ref.read(bandsProvider.notifier).delereBand(band.id);
       },
       background: Container(
         padding: EdgeInsets.only(left: 8),
@@ -112,7 +113,7 @@ Widget _videreData( List<Band> bands ) {
         title: Text(band.nomen),
         trailing: Text('${ band.numerusVotum }', style: TextStyle(fontSize: 20)),
         onTap: () {
-          ref.read(bandsProvider.notifier).addereVotum(band);
+          ref.read(bandsProvider.notifier).addereVotum(band.id);
         },
       ),
     );
@@ -172,21 +173,21 @@ addereNovumBand(BuildContext context, WidgetRef ref) {
 
 
         }
-  void addereBandAdCollecione (BuildContext context,WidgetRef ref, String nomen) {
+  //void addereBandAdCollecione (BuildContext context,WidgetRef ref, String nomen) {
       
-      if (nomen.length > 1) {
-        ref.read(BandsProvider.notifier).addereBand(
-            Band(
-              id: DateTime.now().toString(),
-              nomen: nomen,
-              numerusVotum: 0
-               )
-        );
-      }
+   //   if (nomen.length > 1) {
+   //     ref.read(bandsProvider.notifier).addereBand(
+   //         Band(
+   //           id: DateTime.now().toString(),
+   //           nomen: nomen,
+   //           numerusVotum: 0
+   //         )
+   //     );
+   //   }
       
   }
 
-}
+
 
           
   
