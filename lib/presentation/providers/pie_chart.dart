@@ -1,5 +1,4 @@
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_application_1/config/entities/band.dart';
-import '../../presentation/screens/bands/bands_screen.dart';
+export 'package:flutter/cupertino.dart';
+export 'package:flutter_application_1/config/entities/band.dart';
+export '../../presentation/screens/bands/bands_screen.dart';
 
