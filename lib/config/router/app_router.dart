@@ -1,7 +1,7 @@
-import 'package:flutter_application_1/presentation/screens/bands/bands_screen.dart';
-import 'package:flutter_application_1/presentation/screens/domus/domus_screen.dart';
-import 'package:flutter_application_1/presentation/screens/charta/charta_screen.dart';
-import 'package:flutter_application_1/presentation/screens/numerator/numerator_screen.dart';
+import '../../../presentation/screens/bands/bands_screen.dart';
+import '../../../presentation/screens/domus/domus_screen.dart';
+import '../../../presentation/screens/charta/charta_screen.dart';
+import '../../../presentation/screens/numerator/numerator_screen.dart';
 import 'package:go_router/go_router.dart';
 
 

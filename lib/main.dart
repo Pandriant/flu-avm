@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/presentation/providers/modus_provider.dart';
+import '../../presentation/providers/modus_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'config/config.dart';
 

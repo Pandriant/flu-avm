@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
 
-import 'package:flutter_application_1/config/config.dart';
-import 'package:flutter_application_1/presentation/providers/modus_provider.dart';
+import '../../../config/config.dart';
+import '../../../presentation/providers/modus_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 

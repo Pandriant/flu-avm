@@ -1,6 +1,6 @@
 // ignore_for_file: avoid_print
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/presentation/providers/numerator_provider.dart';
+import '../../providers/numerator_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 

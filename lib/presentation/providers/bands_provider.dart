@@ -1,5 +1,5 @@
 import 'package:socket_io_client/socket_io_client.dart' as IO;
-import 'package:flutter_application_1/config/entities/band.dart';
+import '../../../config/entities/band.dart';
 import 'package:flutter_riverpod/legacy.dart';
 
 

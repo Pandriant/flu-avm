@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/presentation/providers/bands_provider.dart';
+import '../../providers/bands_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../config/entities/band.dart';
 import '../../../config/config.dart';
@@ -187,7 +187,7 @@ addereNovumBand(BuildContext context, WidgetRef ref) {
 
 
         }
-  //void addereBandAdCollecione (BuildContext context,WidgetRef ref, String nomen) {
+  void addereBandAdCollecione (BuildContext context,WidgetRef ref, String nomen) {
       
    //   if (nomen.length > 1) {
    //     ref.read(bandsProvider.notifier).addereBand(
@@ -203,5 +203,5 @@ addereNovumBand(BuildContext context, WidgetRef ref) {
 
 
 
-          
+  }      
   
