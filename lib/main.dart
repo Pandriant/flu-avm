@@ -7,7 +7,7 @@ import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  MapboxOptions.setAccessToken("pk.eyJ1IjoicGFuZHJpYW50IiwiYSI6ImNtcDVsOTZvaDBpOHUycnM5c2dvYm14MDQifQ.1NC1SSMbIOarpvJ1ViN_rQ");
+  MapboxOptions.setAccessToken(mapboxAccessToken);
 
   runApp(
     const ProviderScope (

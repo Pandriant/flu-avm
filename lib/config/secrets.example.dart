@@ -1,0 +1,1 @@
+const String mapboxAccessToken = 'pk.YOUR_MAPBOX_ACCESS_TOKEN';
