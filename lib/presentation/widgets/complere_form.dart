@@ -208,6 +208,6 @@ Future<void> _aperireColorPicker(BuildContext context, WidgetRef ref) async {
 
   // Si se ha seleccionado un color, se establece como estado del provider
   if (electusColor != null) {
-    ref.read(formColorProvider.notifier).state = electusColor;
+    ref.read(markerPositumProvider.notifier).state = true;
   }
 }
