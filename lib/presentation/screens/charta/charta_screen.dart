@@ -78,8 +78,7 @@ class _ChartaScreenState extends ConsumerState<ChartaScreen> {
   }
 
   @override
-  void dispose() {
-    // TODO: implement dispose
+    void dispose() {
     _dragCancelable?.cancel();
     super.dispose();
   }
