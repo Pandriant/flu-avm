@@ -1,12 +1,31 @@
 // ignore: library_prefixes, unused_import
 import 'package:socket_io_client/socket_io_client.dart' as IO;
+import '../config/config.dart';
+import 'dart:async';
+import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
+import '../presentation/providers/charta_provider.dart';
+// Contrato Socket.IO con el backend:
+// - Cliente emite 'CLIENT_REGISTER': { nomen, color (hex), lng, lat }
+// - Cliente emite 'CLIENT_MOVE': { lng, lat }
+// - Servidor emite 'CLIENT_JOINED': { id, nomen, color, lng, lat }
+// - Servidor emite 'CLIENT_LEFT': { id }
+// - Servidor emite 'CLIENT_MOVED': { id, lng, lat }
+// - Servidor emite 'GET_CLIENTS': [ { id, nomen, color, lng, lat }, ... ]
 
 class ChartaService{
   IO.Socket? _socket;
 
+  final Map<String, Usor> _usores = {};
+
+  late final StreamController<List<Usor>> _usoresController;
+
+  ChartaService(){
+    _usoresController = StreamController<List<Usor>>.broadcast();
+  }
+
   void conectare(){
     _socket = IO.io(
-      'http://192.168.68.57:3200',
+      'http://172.16.17.8:3200',
       IO.OptionBuilder()
         .setTransports(['websocket'])
         .enableAutoConnect()
@@ -16,30 +35,61 @@ class ChartaService{
     _socket!.onConnect((_) {
      
       _socket!.on("CLIENT_JOINED", (payload){
-        //TODO: Al usuario que haya llegado lo meteré en el almacen para verlo en pantalla 
+        
+        final usor = Usor.fromJson(Map<String, dynamic>.from(payload));
+        _usores[usor.id] = usor;
+
+        _usoresListenerRenovare();
       });
 
       _socket!.on("CLIENT_LEFT", (payload){
-        //TODO: Borraré este usuario del almacen y desaaparecerá de la pantalla
+        final id = payload['id'] as String;
+
+        _usores.remove(id);
+        _usoresListenerRenovare();
+
     });
 
       _socket!.on("CLIENT_MOVED", (payload){
-        //TODO: Cambiaré la posición del usuario
+        final map = Map<String, dynamic>.from(payload);
+        final id = map['id'] as String;
+        final lng = map['lng'] as double;
+        final lat = map['lat'] as double;
+
+        _usores[id] = _usores[id]!.copyWith(positio: Position(lng, lat));
+
+        _usoresListenerRenovare();
       });
 
        _socket!.on("GET_CLIENTS", (payload){
-        //TODO: Le llega la lista de clientes
+        _usores.clear();
+        
+        for (var item in payload){
+          final usor = Usor.fromJson(item);
+          _usores[usor.id] = usor;
+
+        }
+        _usoresListenerRenovare();
       });
 
     });
 
     _socket!.connect();
+  }
 
+  void _usoresListenerRenovare(){
+    _usoresController.add(List.from(_usores.values));
   }
 
   void finire(){
     _socket!.disconnect();
-    _socket!.dispose();
+    _socket?.dispose();
     _socket = null;
+
+    _usores.clear();
+    _usoresController.add([]);
+    _usoresController.close();
   }
+
+
 }
