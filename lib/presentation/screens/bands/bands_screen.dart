@@ -133,7 +133,7 @@ Widget _videreData( List<Band> bands ) {
     );
   }
 }
-addereNovumBand(BuildContext context, WidgetRef ref) {
+void addereNovumBand(BuildContext context, WidgetRef ref) {
 
   final TextEditingController textumController = TextEditingController();
 

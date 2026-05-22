@@ -1,9 +1,8 @@
-// ignore: library_prefixes, unused_import
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 import '../config/config.dart';
 import 'dart:async';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
-import '../presentation/providers/charta_provider.dart';
+
 // Contrato Socket.IO con el backend:
 // - Cliente emite 'CLIENT_REGISTER': { nomen, color (hex), lng, lat }
 // - Cliente emite 'CLIENT_MOVE': { lng, lat }
@@ -12,84 +11,93 @@ import '../presentation/providers/charta_provider.dart';
 // - Servidor emite 'CLIENT_MOVED': { id, lng, lat }
 // - Servidor emite 'GET_CLIENTS': [ { id, nomen, color, lng, lat }, ... ]
 
-class ChartaService{
+class ChartaService {
   IO.Socket? _socket;
-
   final Map<String, Usor> _usores = {};
-
   late final StreamController<List<Usor>> _usoresController;
 
-  ChartaService(){
+  ChartaService() {
     _usoresController = StreamController<List<Usor>>.broadcast();
   }
 
-  void conectare(){
+  Stream<List<Usor>> get usoresStream => _usoresController.stream;
+
+  String? get meusSocketId => _socket?.id;
+
+  void conectare() {
     _socket = IO.io(
       'http://172.16.17.8:3200',
       IO.OptionBuilder()
-        .setTransports(['websocket'])
-        .enableAutoConnect()
-        .build()
+          .setTransports(['websocket'])
+          .enableAutoConnect()
+          .build(),
     );
 
     _socket!.onConnect((_) {
-     
-      _socket!.on("CLIENT_JOINED", (payload){
-        
+      _socket!.on('CLIENT_JOINED', (payload) {
         final usor = Usor.fromJson(Map<String, dynamic>.from(payload));
         _usores[usor.id] = usor;
-
         _usoresListenerRenovare();
       });
 
-      _socket!.on("CLIENT_LEFT", (payload){
+      _socket!.on('CLIENT_LEFT', (payload) {
         final id = payload['id'] as String;
-
         _usores.remove(id);
         _usoresListenerRenovare();
+      });
 
-    });
-
-      _socket!.on("CLIENT_MOVED", (payload){
+      _socket!.on('CLIENT_MOVED', (payload) {
         final map = Map<String, dynamic>.from(payload);
         final id = map['id'] as String;
         final lng = map['lng'] as double;
         final lat = map['lat'] as double;
-
         _usores[id] = _usores[id]!.copyWith(positio: Position(lng, lat));
-
         _usoresListenerRenovare();
       });
 
-       _socket!.on("GET_CLIENTS", (payload){
+      _socket!.on('GET_CLIENTS', (payload) {
         _usores.clear();
-        
-        for (var item in payload){
+        for (var item in payload) {
           final usor = Usor.fromJson(item);
           _usores[usor.id] = usor;
-
         }
         _usoresListenerRenovare();
       });
-
     });
 
     _socket!.connect();
   }
 
-  void _usoresListenerRenovare(){
+  void _usoresListenerRenovare() {
     _usoresController.add(List.from(_usores.values));
   }
 
-  void finire(){
-    _socket!.disconnect();
+  void mittereUsor({
+    required String nomen,
+    required String colorHex,
+    required Position positio,
+  }) {
+    _socket?.emit('CLIENT_REGISTER', {
+      'nomen': nomen,
+      'color': colorHex,
+      'lng': positio.lng,
+      'lat': positio.lat,
+    });
+  }
+
+  void mitterePositio(Position positio) {
+    _socket?.emit('CLIENT_MOVE', {
+      'lng': positio.lng,
+      'lat': positio.lat,
+    });
+  }
+
+  void finire() {
+    _socket?.disconnect();
     _socket?.dispose();
     _socket = null;
-
     _usores.clear();
     _usoresController.add([]);
     _usoresController.close();
   }
-
-
 }

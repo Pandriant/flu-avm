@@ -1,8 +1,9 @@
+import '../../../presentation/providers/providers.dart';
 import '../../../presentation/widgets/wirget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
-import '../../providers/providers.dart';
+
 
 class ChartaScreen extends ConsumerStatefulWidget{
   const ChartaScreen({super.key});
@@ -78,7 +79,8 @@ class _ChartaScreenState extends ConsumerState<ChartaScreen> {
   }
 
   @override
-    void dispose() {
+  void dispose() {
+    // TODO: implement dispose
     _dragCancelable?.cancel();
     super.dispose();
   }
@@ -103,7 +105,7 @@ class _ChartaScreenState extends ConsumerState<ChartaScreen> {
             key: const ValueKey('main_mapa'),
             cameraOptions: CameraOptions(
               center: Point(
-                coordinates: initialisMarkerPositio,
+                coordinates: initialisMarkerPoistio,
               ),
               zoom: 14.5,
             ),
