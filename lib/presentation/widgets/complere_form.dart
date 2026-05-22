@@ -120,7 +120,15 @@ class ComplereForm extends ConsumerWidget {
     final String colorValue = exColorAdHex(color); 
 
     if(nameValue.isEmpty) return;
- 
+
+    final socketService = ref.read(socketServiceProvider);
+    socketService.conectare();
+
+    socketService.mittereUsor(
+      nomen: nameValue,
+      colorHex: colorValue, 
+      positio: ref.read(coordsMarkerProvider));
+
     ref.read(markerPositumProvider.notifier).state = true;
 
     // ignore: avoid_print

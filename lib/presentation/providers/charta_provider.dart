@@ -5,25 +5,21 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 
+// Init var
+final Position initialisMarkerPositio = Position(-122.467895, 37.800126);
 
-final formNomenProvider = StateProvider((ref) => '');
 
+//Providers
 final formColorProvider = StateProvider<Color>((ref) => Colors.red);
-
+final formNomenProvider = StateProvider<String>((ref) => '');
 final markerPositumProvider = StateProvider<bool>((ref) => false);
-
-final Position initialisMarkerPoistio = Position(-122.467895, 37.800126);
-final coordsMarkerProvider = StateProvider<Position>((ref) => initialisMarkerPoistio);
-
+final coordsMarkerProvider = StateProvider<Position>((ref) => initialisMarkerPositio);
 final socketServiceProvider = Provider<ChartaService>((ref) {
-  final service = ChartaService();
-
+final service = ChartaService();
+ 
   ref.onDispose(service.finire);
-  
-  return service;
+  return service; 
 });
-
-
 final aliiUsoresProvider = StreamProvider<List<Usor>>((ref) {
   final service = ref.watch(socketServiceProvider);
   return service.usoresStream;
