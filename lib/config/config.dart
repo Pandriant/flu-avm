@@ -5,3 +5,4 @@ export './entities/band.dart';
 export './helper/coloris_forma.dart';
 export 'secrets.dart';
 export './entities/usor.dart';
+export './entities/pokemon.dart';
