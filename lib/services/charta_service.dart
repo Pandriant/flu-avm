@@ -28,8 +28,8 @@ class ChartaService{
 
   void conectare(){
     _socket = IO.io(
-      'http://192.168.68.57:3200',
-      IO.OptionBuilder()
+      'http://192.168.1.17:3200',
+            IO.OptionBuilder()
         .setTransports(['websocket'])
         .enableAutoConnect()
         .build()
