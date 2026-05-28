@@ -2,8 +2,12 @@ import '../../../presentation/screens/screens.dart';
 import 'package:go_router/go_router.dart';
 
 final appRouter = GoRouter(
-  initialLocation: '/',
+  initialLocation: '/splash',
   routes: [
+    GoRoute(
+      path: '/splash',                          
+      builder: (context, state) => const SatusScreen(),
+    ),
     GoRoute(
       path: "/",
       builder: (context, state)=>const DomusScreen()

@@ -63,10 +63,10 @@ class _PokemonsVisumState extends ConsumerState<PokemonsVisum> {
             elevation: 0,
             flexibleSpace: Container(
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.18),
+                color: Colors.white.withValues(alpha: 0.18),
                 border: Border(
                   bottom: BorderSide(
-                    color: Colors.white.withOpacity(0.30),
+                    color: Colors.white.withValues(alpha: 0.30),
                     width: 1,
                   ),
                 ),
@@ -107,7 +107,9 @@ class _PokemonsVisumState extends ConsumerState<PokemonsVisum> {
 
   void movereScrollAdDescendit() {
     if (scrollController.position.pixels + 100 <=
-        scrollController.position.maxScrollExtent) return;
+        scrollController.position.maxScrollExtent) {
+      return;
+    }
     scrollController.animateTo(
       scrollController.position.pixels + 200,
       duration: const Duration(milliseconds: 300),
@@ -185,12 +187,12 @@ class _PokemonCardState extends State<_PokemonCard> {
             ),
             borderRadius: BorderRadius.circular(18),
             border: Border.all(
-              color: Colors.white.withOpacity(0.45),
+              color: Colors.white.withValues(alpha: 0.45),
               width: 1.5,
             ),
             boxShadow: [
               BoxShadow(
-                color: _gradient[0].withOpacity(0.45),
+                color: _gradient[0].withValues(alpha: 0.45),
                 blurRadius: 10,
                 offset: const Offset(0, 4),
               ),
@@ -210,7 +212,7 @@ class _PokemonCardState extends State<_PokemonCard> {
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
                         colors: [
-                          Colors.white.withOpacity(0.28),
+                          Colors.white.withValues(alpha: 0.28),
                           Colors.transparent,
                         ],
                         begin: Alignment.topCenter,
@@ -228,9 +230,9 @@ class _PokemonCardState extends State<_PokemonCard> {
                     height: 48,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: Colors.white.withOpacity(0.10),
+                      color: Colors.white.withValues(alpha: 0.10),
                       border: Border.all(
-                        color: Colors.white.withOpacity(0.18),
+                        color: Colors.white.withValues(alpha: 0.18),
                         width: 1,
                       ),
                     ),
@@ -250,7 +252,7 @@ class _PokemonCardState extends State<_PokemonCard> {
                           height: 24,
                           child: CircularProgressIndicator(
                             strokeWidth: 2,
-                            color: Colors.white.withOpacity(0.7),
+                            color: Colors.white.withValues(alpha: 0.7),
                           ),
                         ),
                       );
@@ -266,7 +268,7 @@ class _PokemonCardState extends State<_PokemonCard> {
                     child: Text(
                       '#${widget.index + 1}',
                       style: TextStyle(
-                        color: Colors.white.withOpacity(0.85),
+                        color: Colors.white.withValues(alpha: 0.85),
                         fontSize: 11,
                         fontWeight: FontWeight.w600,
                         letterSpacing: 0.5,

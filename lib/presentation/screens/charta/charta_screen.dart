@@ -115,15 +115,15 @@ class _ChartaScreenState extends ConsumerState<ChartaScreen> {
           decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: [
-                const Color(0xFF0A7EC2).withOpacity(0.75),
-                const Color(0xFF1BAEE0).withOpacity(0.55),
+                const Color(0xFF0A7EC2).withValues(alpha: 0.75),
+                const Color(0xFF1BAEE0).withValues(alpha: 0.55),
               ],
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
             ),
             border: Border(
               bottom: BorderSide(
-                color: Colors.white.withOpacity(0.25),
+                color: Colors.white.withValues(alpha: 0.25),
                 width: 1,
               ),
             ),
@@ -202,15 +202,15 @@ class _GlassPanel extends StatelessWidget {
     return Container(
       constraints: const BoxConstraints(maxWidth: 220),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.18),
+        color: Colors.white.withValues(alpha: 0.18),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: Colors.white.withOpacity(0.45),
+          color: Colors.white.withValues(alpha: 0.45),
           width: 1.5,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.10),
+            color: Colors.black.withValues(alpha: 0.10),
             blurRadius: 16,
             offset: const Offset(0, 4),
           ),
@@ -228,7 +228,7 @@ class _GlassPanel extends StatelessWidget {
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [
-                      Colors.white.withOpacity(0.22),
+                      Colors.white.withValues(alpha: 0.22),
                       Colors.transparent,
                     ],
                     begin: Alignment.topCenter,
@@ -258,9 +258,9 @@ class _ConnectedUsersOrb extends ConsumerWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.22),
+        color: Colors.white.withValues(alpha: 0.22),
         borderRadius: BorderRadius.circular(50),
-        border: Border.all(color: Colors.white.withOpacity(0.50), width: 1),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.50), width: 1),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -272,7 +272,7 @@ class _ConnectedUsersOrb extends ConsumerWidget {
               color: const Color(0xFF3ECFA0),
               boxShadow: [
                 BoxShadow(
-                  color: const Color(0xFF3ECFA0).withOpacity(0.7),
+                  color: const Color(0xFF3ECFA0).withValues(alpha: 0.7),
                   blurRadius: 6,
                   spreadRadius: 1,
                 ),
@@ -312,10 +312,10 @@ class _UsersCountBadge extends ConsumerWidget {
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: Colors.white.withOpacity(0.45), width: 1.5),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.45), width: 1.5),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF1B9FD8).withOpacity(0.4),
+            color: const Color(0xFF1B9FD8).withValues(alpha: 0.4),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),

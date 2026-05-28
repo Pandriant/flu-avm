@@ -63,12 +63,12 @@ class NumeratorScreen extends ConsumerWidget {
                         radius: 1.0,
                       ),
                       border: Border.all(
-                        color: Colors.white.withOpacity(0.7),
+                        color: Colors.white.withValues(alpha: 0.7),
                         width: 3,
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color: const Color(0xFF29B6E8).withOpacity(0.5),
+                          color: const Color(0xFF29B6E8).withValues(alpha: 0.5),
                           blurRadius: 30,
                           spreadRadius: 8,
                         ),
@@ -92,10 +92,10 @@ class NumeratorScreen extends ConsumerWidget {
                     padding: const EdgeInsets.symmetric(
                         horizontal: 24, vertical: 10),
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.20),
+                      color: Colors.white.withValues(alpha: 0.20),
                       borderRadius: BorderRadius.circular(50),
                       border: Border.all(
-                        color: Colors.white.withOpacity(0.45),
+                        color: Colors.white.withValues(alpha: 0.45),
                         width: 1.5,
                       ),
                     ),
@@ -146,14 +146,14 @@ class NumeratorScreen extends ConsumerWidget {
           shape: BoxShape.circle,
           gradient: RadialGradient(
             colors: [
-              Colors.white.withOpacity(opacity * 1.5),
-              Colors.white.withOpacity(opacity * 0.3),
+              Colors.white.withValues(alpha: opacity * 1.5),
+              Colors.white.withValues(alpha: opacity * 0.3),
               Colors.transparent,
             ],
             stops: const [0.0, 0.5, 1.0],
           ),
           border: Border.all(
-            color: Colors.white.withOpacity(0.18),
+            color: Colors.white.withValues(alpha: 0.18),
             width: 1.5,
           ),
         ),
@@ -184,12 +184,12 @@ class _AeroFAB extends StatelessWidget {
             end: Alignment.bottomRight,
           ),
           border: Border.all(
-            color: Colors.white.withOpacity(0.6),
+            color: Colors.white.withValues(alpha: 0.6),
             width: 2,
           ),
           boxShadow: [
             BoxShadow(
-              color: const Color(0xFF1B9FD8).withOpacity(0.5),
+              color: const Color(0xFF1B9FD8).withValues(alpha: 0.5),
               blurRadius: 16,
               offset: const Offset(0, 6),
             ),
@@ -206,7 +206,7 @@ class _AeroFAB extends StatelessWidget {
                 height: 16,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(50),
-                  color: Colors.white.withOpacity(0.30),
+                  color: Colors.white.withValues(alpha: 0.30),
                 ),
               ),
             ),

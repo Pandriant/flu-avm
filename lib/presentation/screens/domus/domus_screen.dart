@@ -4,19 +4,34 @@ import '../../../presentation/providers/modus_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-// ─── Paleta Frutiger Aero ───────────────────────────────────────────────────
+// ─── Paleta Frutiger Aero (Claro y Oscuro) ──────────────────────────────────
 class _AeroPalette {
+  // Colores claros (modo normal)
   static const skyTop    = Color(0xFF0A7EC2);
   static const skyMid    = Color(0xFF29B6E8);
   static const skyLight  = Color(0xFF7DD9F5);
   static const mint      = Color(0xFF3ECFA0);
   static const mintLight = Color(0xFF9FEDD8);
+  
+  // Colores oscuros (modo nocturno)
+  static const darkSkyTop    = Color(0xFF0A2E4A);
+  static const darkSkyMid    = Color(0xFF1A5F8E);
+  static const darkSkyLight  = Color(0xFF2D7BB5);
+  static const darkMint      = Color(0xFF2A8F6B);
+  static const darkMintLight = Color(0xFF3DA87D);
+  
   static const white70   = Color(0xB3FFFFFF);
   static const white40   = Color(0x66FFFFFF);
   static const white20   = Color(0x33FFFFFF);
   static const glassEdge = Color(0x80FFFFFF);
+  
+  // Colores oscuros para glassmorphism
+  static const darkWhite70   = Color(0xB31A1A1A);
+  static const darkWhite40   = Color(0x661A1A1A);
+  static const darkWhite20   = Color(0x331A1A1A);
+  static const darkGlassEdge = Color(0x80333333);
 
-  // Colores de tarjeta por índice — todos con tono Aero
+  // Gradientes modo claro
   static const cardGradients = [
     [Color(0xFF1B9FD8), Color(0xFF0D6EA8)],
     [Color(0xFF27C48A), Color(0xFF0F8F63)],
@@ -27,6 +42,23 @@ class _AeroPalette {
     [Color(0xFF7BA8F0), Color(0xFF3A64C8)],
     [Color(0xFF38D4C8), Color(0xFF179A90)],
   ];
+  
+  // Gradientes modo oscuro
+  static const darkCardGradients = [
+    [Color(0xFF0D4A6E), Color(0xFF073A58)],
+    [Color(0xFF1A6B4A), Color(0xFF0F4F38)],
+    [Color(0xFF2E4A8A), Color(0xFF1A3570)],
+    [Color(0xFF1B705E), Color(0xFF0F5548)],
+    [Color(0xFF1A5580), Color(0xFF0F4060)],
+    [Color(0xFF1C6B4A), Color(0xFF0F5038)],
+    [Color(0xFF2A4A80), Color(0xFF1A3570)],
+    [Color(0xFF1B7068), Color(0xFF0F5550)],
+  ];
+  
+  static List<Color> getCardGradient(int index, bool isDarkMode) {
+    final pairs = isDarkMode ? darkCardGradients : cardGradients;
+    return pairs[index % pairs.length];
+  }
 }
 
 // ─── Pantalla principal ─────────────────────────────────────────────────────
@@ -45,13 +77,13 @@ class DomusScreen extends ConsumerWidget {
         title: Text(
           'Flu Avm App',
           style: TextStyle(
-            color: Colors.white,
+            color: estTenebrisModus ? Colors.grey[300] : Colors.white,
             fontWeight: FontWeight.w700,
             fontSize: 20,
             letterSpacing: 0.5,
             shadows: [
               Shadow(
-                color: Colors.black.withOpacity(0.25),
+                color: Colors.black.withValues(alpha: 0.25),
                 blurRadius: 6,
                 offset: const Offset(0, 2),
               ),
@@ -70,16 +102,22 @@ class DomusScreen extends ConsumerWidget {
                     .read(estTenebrisModusProvider.notifier)
                     .update((state) => !estTenebrisModus);
               },
+              isDarkMode: estTenebrisModus,
             ),
           ),
         ],
       ),
       body: _AeroBackground(
+        isDarkMode: estTenebrisModus,
         child: SafeArea(
           child: Column(
             children: [
               const _DomusBandera(),
-              const Expanded(child: _DomusMatrix()),
+              Expanded(
+                child: _DomusMatrix(
+                  isDarkMode: estTenebrisModus,
+                ),
+              ),
             ],
           ),
         ),
@@ -91,18 +129,25 @@ class DomusScreen extends ConsumerWidget {
 // ─── Fondo degradado Aero con burbujas ─────────────────────────────────────
 class _AeroBackground extends StatelessWidget {
   final Widget child;
-  const _AeroBackground({required this.child});
+  final bool isDarkMode;
+  const _AeroBackground({required this.child, required this.isDarkMode});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [
-            Color(0xFF0A7EC2),
-            Color(0xFF1BAEE0),
-            Color(0xFF3ECFA0),
-          ],
+          colors: isDarkMode
+              ? [
+                  _AeroPalette.darkSkyTop,
+                  _AeroPalette.darkSkyMid,
+                  _AeroPalette.darkMint,
+                ]
+              : [
+                  _AeroPalette.skyTop,
+                  _AeroPalette.skyMid,
+                  _AeroPalette.mint,
+                ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -110,20 +155,24 @@ class _AeroBackground extends StatelessWidget {
       child: Stack(
         children: [
           // Burbujas decorativas Aero
-          ..._buildBubbles(),
+          ..._buildBubbles(isDarkMode),
           child,
         ],
       ),
     );
   }
 
-  List<Widget> _buildBubbles() {
+  List<Widget> _buildBubbles(bool isDarkMode) {
+    final bubbleColor = isDarkMode 
+        ? Colors.white.withValues(alpha: 0.08)
+        : Colors.white.withValues(alpha: 0.12);
+    
     final bubbles = [
-      _BubbleData(left: -40,  top: 80,  size: 180, opacity: 0.12),
-      _BubbleData(right: -60, top: 200, size: 220, opacity: 0.10),
-      _BubbleData(left: 60,   top: 320, size: 120, opacity: 0.08),
-      _BubbleData(right: 20,  bottom: 200, size: 160, opacity: 0.10),
-      _BubbleData(left: -20,  bottom: 80,  size: 200, opacity: 0.09),
+      _BubbleData(left: -40,  top: 80,  size: 180, opacity: isDarkMode ? 0.06 : 0.12),
+      _BubbleData(right: -60, top: 200, size: 220, opacity: isDarkMode ? 0.05 : 0.10),
+      _BubbleData(left: 60,   top: 320, size: 120, opacity: isDarkMode ? 0.04 : 0.08),
+      _BubbleData(right: 20,  bottom: 200, size: 160, opacity: isDarkMode ? 0.05 : 0.10),
+      _BubbleData(left: -20,  bottom: 80,  size: 200, opacity: isDarkMode ? 0.04 : 0.09),
     ];
 
     return bubbles.map((b) {
@@ -139,14 +188,14 @@ class _AeroBackground extends StatelessWidget {
             shape: BoxShape.circle,
             gradient: RadialGradient(
               colors: [
-                Colors.white.withOpacity(b.opacity * 1.5),
-                Colors.white.withOpacity(b.opacity * 0.3),
+                bubbleColor.withValues(alpha: b.opacity * 1.5),
+                bubbleColor.withValues(alpha: b.opacity * 0.3),
                 Colors.transparent,
               ],
               stops: const [0.0, 0.5, 1.0],
             ),
             border: Border.all(
-              color: Colors.white.withOpacity(0.18),
+              color: (isDarkMode ? Colors.grey[800]! : Colors.white).withValues(alpha: 0.18),
               width: 1.5,
             ),
           ),
@@ -169,7 +218,8 @@ class _BubbleData {
 class _GlassIconButton extends StatelessWidget {
   final IconData icon;
   final VoidCallback onTap;
-  const _GlassIconButton({required this.icon, required this.onTap});
+  final bool isDarkMode;
+  const _GlassIconButton({required this.icon, required this.onTap, required this.isDarkMode});
 
   @override
   Widget build(BuildContext context) {
@@ -179,37 +229,46 @@ class _GlassIconButton extends StatelessWidget {
         width: 38,
         height: 38,
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.22),
+          color: (isDarkMode ? Colors.grey[800]! : Colors.white).withValues(alpha: 0.22),
           shape: BoxShape.circle,
-          border: Border.all(color: Colors.white.withOpacity(0.5), width: 1),
+          border: Border.all(
+            color: (isDarkMode ? Colors.grey[600]! : Colors.white).withValues(alpha: 0.5), 
+            width: 1,
+          ),
         ),
-        child: Icon(icon, color: Colors.white, size: 20),
+        child: Icon(
+          icon, 
+          color: isDarkMode ? Colors.grey[300] : Colors.white, 
+          size: 20,
+        ),
       ),
     );
   }
 }
 
 // ─── Banner superior ────────────────────────────────────────────────────────
-class _DomusBandera extends StatelessWidget {
+class _DomusBandera extends ConsumerWidget {
   const _DomusBandera();
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final bool isDarkMode = ref.watch(estTenebrisModusProvider);
+    
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
       child: Container(
         width: double.infinity,
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.18),
+          color: (isDarkMode ? Colors.grey[900]! : Colors.white).withValues(alpha: isDarkMode ? 0.25 : 0.18),
           borderRadius: BorderRadius.circular(24),
           border: Border.all(
-            color: Colors.white.withOpacity(0.45),
+            color: (isDarkMode ? Colors.grey[700]! : Colors.white).withValues(alpha: 0.45),
             width: 1.5,
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.08),
+              color: Colors.black.withValues(alpha: 0.08),
               blurRadius: 16,
               offset: const Offset(0, 4),
             ),
@@ -224,32 +283,44 @@ class _DomusBandera extends StatelessWidget {
               height: 52,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                gradient: const RadialGradient(
-                  colors: [
-                    Color(0xFFFFFFFF),
-                    Color(0xFF7DD9F5),
-                    Color(0xFF29B6E8),
-                  ],
-                  center: Alignment(-0.3, -0.4),
-                  focal: Alignment(-0.3, -0.4),
-                  focalRadius: 0.1,
-                  radius: 1.0,
-                ),
+                gradient: isDarkMode
+                    ? const RadialGradient(
+                        colors: [
+                          Color(0xFF2D7BB5),
+                          Color(0xFF1A5F8E),
+                          Color(0xFF0A2E4A),
+                        ],
+                        center: Alignment(-0.3, -0.4),
+                        focal: Alignment(-0.3, -0.4),
+                        focalRadius: 0.1,
+                        radius: 1.0,
+                      )
+                    : const RadialGradient(
+                        colors: [
+                          Color(0xFFFFFFFF),
+                          Color(0xFF7DD9F5),
+                          Color(0xFF29B6E8),
+                        ],
+                        center: Alignment(-0.3, -0.4),
+                        focal: Alignment(-0.3, -0.4),
+                        focalRadius: 0.1,
+                        radius: 1.0,
+                      ),
                 border: Border.all(
-                  color: Colors.white.withOpacity(0.7),
+                  color: (isDarkMode ? Colors.grey[600]! : Colors.white).withValues(alpha: 0.7),
                   width: 2,
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: _AeroPalette.skyMid.withOpacity(0.4),
+                    color: (isDarkMode ? _AeroPalette.darkSkyMid : _AeroPalette.skyMid).withValues(alpha: 0.4),
                     blurRadius: 12,
                     spreadRadius: 2,
                   ),
                 ],
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.water_drop_rounded,
-                color: Color(0xFF0A7EC2),
+                color: isDarkMode ? _AeroPalette.darkSkyMid : _AeroPalette.skyTop,
                 size: 26,
               ),
             ),
@@ -261,13 +332,13 @@ class _DomusBandera extends StatelessWidget {
                   Text(
                     'Frutiger Aero',
                     style: TextStyle(
-                      color: Colors.white,
+                      color: isDarkMode ? Colors.grey[200] : Colors.white,
                       fontWeight: FontWeight.w700,
                       fontSize: 22,
                       letterSpacing: 0.3,
                       shadows: [
                         Shadow(
-                          color: Colors.black.withOpacity(0.2),
+                          color: Colors.black.withValues(alpha: 0.2),
                           blurRadius: 4,
                         ),
                       ],
@@ -277,7 +348,7 @@ class _DomusBandera extends StatelessWidget {
                   Text(
                     'Adéntrate en el mundo digital',
                     style: TextStyle(
-                      color: Colors.white.withOpacity(0.85),
+                      color: (isDarkMode ? Colors.grey[400] : Colors.white),
                       fontSize: 13,
                       fontWeight: FontWeight.w400,
                     ),
@@ -288,11 +359,11 @@ class _DomusBandera extends StatelessWidget {
             // Destellos decorativos
             Column(
               children: [
-                _GlossOrb(size: 10, opacity: 0.6),
+                _GlossOrb(size: 10, opacity: 0.6, isDarkMode: isDarkMode),
                 const SizedBox(height: 6),
-                _GlossOrb(size: 7, opacity: 0.4),
+                _GlossOrb(size: 7, opacity: 0.4, isDarkMode: isDarkMode),
                 const SizedBox(height: 4),
-                _GlossOrb(size: 5, opacity: 0.3),
+                _GlossOrb(size: 5, opacity: 0.3, isDarkMode: isDarkMode),
               ],
             ),
           ],
@@ -306,7 +377,8 @@ class _DomusBandera extends StatelessWidget {
 class _GlossOrb extends StatelessWidget {
   final double size;
   final double opacity;
-  const _GlossOrb({required this.size, required this.opacity});
+  final bool isDarkMode;
+  const _GlossOrb({required this.size, required this.opacity, required this.isDarkMode});
 
   @override
   Widget build(BuildContext context) {
@@ -315,10 +387,10 @@ class _GlossOrb extends StatelessWidget {
       height: size,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: Colors.white.withOpacity(opacity),
+        color: (isDarkMode ? Colors.grey[400]! : Colors.white).withValues(alpha: opacity),
         boxShadow: [
           BoxShadow(
-            color: Colors.white.withOpacity(opacity * 0.5),
+            color: (isDarkMode ? Colors.grey[600]! : Colors.white).withValues(alpha: opacity * 0.5),
             blurRadius: size,
             spreadRadius: 1,
           ),
@@ -330,7 +402,8 @@ class _GlossOrb extends StatelessWidget {
 
 // ─── Grid de tarjetas ───────────────────────────────────────────────────────
 class _DomusMatrix extends StatelessWidget {
-  const _DomusMatrix();
+  final bool isDarkMode;
+  const _DomusMatrix({required this.isDarkMode});
 
   @override
   Widget build(BuildContext context) {
@@ -347,7 +420,11 @@ class _DomusMatrix extends StatelessWidget {
       ),
       itemCount: appMenuItems.length,
       itemBuilder: (context, index) {
-        return _AeroCard(menuItem: appMenuItems[index], index: index);
+        return _AeroCard(
+          menuItem: appMenuItems[index], 
+          index: index,
+          isDarkMode: isDarkMode,
+        );
       },
     );
   }
@@ -357,7 +434,8 @@ class _DomusMatrix extends StatelessWidget {
 class _AeroCard extends StatefulWidget {
   final MenuItem menuItem;
   final int index;
-  const _AeroCard({required this.menuItem, required this.index});
+  final bool isDarkMode;
+  const _AeroCard({required this.menuItem, required this.index, required this.isDarkMode});
 
   @override
   State<_AeroCard> createState() => _AeroCardState();
@@ -389,8 +467,7 @@ class _AeroCardState extends State<_AeroCard>
   }
 
   List<Color> get _gradient {
-    final pairs = _AeroPalette.cardGradients;
-    return pairs[widget.index % pairs.length];
+    return _AeroPalette.getCardGradient(widget.index, widget.isDarkMode);
   }
 
   @override
@@ -417,17 +494,17 @@ class _AeroCardState extends State<_AeroCard>
             ),
             borderRadius: BorderRadius.circular(20),
             border: Border.all(
-              color: Colors.white.withOpacity(0.45),
+              color: (widget.isDarkMode ? Colors.grey[700]! : Colors.white).withValues(alpha: 0.45),
               width: 1.5,
             ),
             boxShadow: [
               BoxShadow(
-                color: _gradient[0].withOpacity(0.45),
+                color: _gradient[0].withValues(alpha: widget.isDarkMode ? 0.25 : 0.45),
                 blurRadius: 14,
                 offset: const Offset(0, 6),
               ),
               BoxShadow(
-                color: Colors.black.withOpacity(0.08),
+                color: Colors.black.withValues(alpha: widget.isDarkMode ? 0.2 : 0.08),
                 blurRadius: 6,
                 offset: const Offset(0, 2),
               ),
@@ -447,8 +524,8 @@ class _AeroCardState extends State<_AeroCard>
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
                         colors: [
-                          Colors.white.withOpacity(0.28),
-                          Colors.white.withOpacity(0.0),
+                          Colors.white.withValues(alpha: widget.isDarkMode ? 0.08 : 0.28),
+                          Colors.white.withValues(alpha: 0.0),
                         ],
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
@@ -465,9 +542,9 @@ class _AeroCardState extends State<_AeroCard>
                     height: 70,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: Colors.white.withOpacity(0.10),
+                      color: Colors.white.withValues(alpha: widget.isDarkMode ? 0.03 : 0.10),
                       border: Border.all(
-                        color: Colors.white.withOpacity(0.18),
+                        color: Colors.white.withValues(alpha: widget.isDarkMode ? 0.08 : 0.18),
                         width: 1,
                       ),
                     ),
@@ -485,10 +562,10 @@ class _AeroCardState extends State<_AeroCard>
                         width: 44,
                         height: 44,
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.22),
+                          color: Colors.white.withValues(alpha: widget.isDarkMode ? 0.12 : 0.22),
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(
-                            color: Colors.white.withOpacity(0.5),
+                            color: Colors.white.withValues(alpha: widget.isDarkMode ? 0.3 : 0.5),
                             width: 1,
                           ),
                         ),
@@ -517,7 +594,7 @@ class _AeroCardState extends State<_AeroCard>
                           Text(
                             widget.menuItem.subtitulus,
                             style: TextStyle(
-                              color: Colors.white.withOpacity(0.78),
+                              color: Colors.white.withValues(alpha: widget.isDarkMode ? 0.7 : 0.78),
                               fontSize: 11,
                               fontWeight: FontWeight.w400,
                             ),

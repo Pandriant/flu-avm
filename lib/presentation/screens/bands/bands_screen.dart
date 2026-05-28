@@ -45,13 +45,13 @@ Widget _aeroBubble({
         shape: BoxShape.circle,
         gradient: RadialGradient(
           colors: [
-            Colors.white.withOpacity(opacity * 1.5),
-            Colors.white.withOpacity(opacity * 0.3),
+            Colors.white.withValues(alpha: opacity * 1.5),
+            Colors.white.withValues(alpha: opacity * 0.3),
             Colors.transparent,
           ],
           stops: const [0.0, 0.5, 1.0],
         ),
-        border: Border.all(color: Colors.white.withOpacity(0.18), width: 1.5),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.18), width: 1.5),
       ),
     ),
   );
@@ -183,8 +183,8 @@ class _StatusOrb extends StatelessWidget {
       height: 34,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: Colors.white.withOpacity(0.20),
-        border: Border.all(color: Colors.white.withOpacity(0.45), width: 1),
+        color: Colors.white.withValues(alpha: 0.20),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.45), width: 1),
       ),
       child: Center(
         child: Container(
@@ -194,7 +194,7 @@ class _StatusOrb extends StatelessWidget {
             shape: BoxShape.circle,
             color: color,
             boxShadow: [
-              BoxShadow(color: color.withOpacity(0.6), blurRadius: 8, spreadRadius: 2),
+              BoxShadow(color: color.withValues(alpha: 0.6), blurRadius: 8, spreadRadius: 2),
             ],
           ),
         ),
@@ -220,7 +220,7 @@ class _AeroPiePanel extends StatelessWidget {
         child: ClipRRect(
           borderRadius: BorderRadius.circular(12),
           child: LinearProgressIndicator(
-            backgroundColor: Colors.white.withOpacity(0.20),
+            backgroundColor: Colors.white.withValues(alpha: 0.20),
             valueColor: const AlwaysStoppedAnimation(Colors.white),
           ),
         ),
@@ -234,12 +234,12 @@ class _AeroPiePanel extends StatelessWidget {
         height: 200,
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.18),
+          color: Colors.white.withValues(alpha: 0.18),
           borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: Colors.white.withOpacity(0.45), width: 1.5),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.45), width: 1.5),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.08),
+              color: Colors.black.withValues(alpha: 0.08),
               blurRadius: 16,
               offset: const Offset(0, 4),
             ),
@@ -299,7 +299,7 @@ class _BandTile extends StatelessWidget {
         background: Container(
           padding: const EdgeInsets.only(left: 20),
           decoration: BoxDecoration(
-            color: const Color(0xFFE85555).withOpacity(0.85),
+            color: const Color(0xFFE85555).withValues(alpha: 0.85),
             borderRadius: BorderRadius.circular(18),
           ),
           child: const Align(
@@ -327,10 +327,10 @@ class _BandTile extends StatelessWidget {
                 end: Alignment.bottomRight,
               ),
               borderRadius: BorderRadius.circular(18),
-              border: Border.all(color: Colors.white.withOpacity(0.40), width: 1.5),
+              border: Border.all(color: Colors.white.withValues(alpha: 0.40), width: 1.5),
               boxShadow: [
                 BoxShadow(
-                  color: _gradient[0].withOpacity(0.35),
+                  color: _gradient[0].withValues(alpha: 0.35),
                   blurRadius: 10,
                   offset: const Offset(0, 4),
                 ),
@@ -344,8 +344,8 @@ class _BandTile extends StatelessWidget {
                   height: 44,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: Colors.white.withOpacity(0.22),
-                    border: Border.all(color: Colors.white.withOpacity(0.5), width: 1),
+                    color: Colors.white.withValues(alpha: 0.22),
+                    border: Border.all(color: Colors.white.withValues(alpha: 0.5), width: 1),
                   ),
                   child: Center(
                     child: Text(
@@ -375,9 +375,9 @@ class _BandTile extends StatelessWidget {
                   constraints: const BoxConstraints(minWidth: 40),
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.22),
+                    color: Colors.white.withValues(alpha: 0.22),
                     borderRadius: BorderRadius.circular(50),
-                    border: Border.all(color: Colors.white.withOpacity(0.45), width: 1),
+                    border: Border.all(color: Colors.white.withValues(alpha: 0.45), width: 1),
                   ),
                   child: Text(
                     '${band.numerusVotum}',
@@ -416,10 +416,10 @@ class _AeroFAB extends StatelessWidget {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
-          border: Border.all(color: Colors.white.withOpacity(0.6), width: 2),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.6), width: 2),
           boxShadow: [
             BoxShadow(
-              color: const Color(0xFF1B9FD8).withOpacity(0.5),
+              color: const Color(0xFF1B9FD8).withValues(alpha: 0.5),
               blurRadius: 16,
               offset: const Offset(0, 6),
             ),
@@ -433,7 +433,7 @@ class _AeroFAB extends StatelessWidget {
                 height: 16,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(50),
-                  color: Colors.white.withOpacity(0.28),
+                  color: Colors.white.withValues(alpha: 0.28),
                 ),
               ),
             ),
