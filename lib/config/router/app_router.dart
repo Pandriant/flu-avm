@@ -36,5 +36,10 @@ final appRouter = GoRouter(
       GoRoute(path: '/canticum',
       builder: (context, state)=> const CanticumScreen()
       ),
+      GoRoute(
+      path: '/lectio',
+      name: 'lectio',
+      builder: (context, state) => const LectioScreen(),
+    ),
   ]
 );

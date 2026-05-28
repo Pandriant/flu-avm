@@ -6,3 +6,4 @@ export './Pokemon/pokemons_screen.dart';
 export './Pokemon/pokemon_screen.dart';
 export './Satus/satus_screen.dart';
 export './canticum/canticum_screen.dart';
+export './lectio/lectio_screen.dart';

@@ -44,4 +44,11 @@ const appMenuItems = <MenuItem>[
     link: '/canticum',
     icon: Icons.disc_full_outlined),
 
+   MenuItem(
+    titulus: 'Lectio',
+    subtitulus: 'Análisis de comentarios',
+    icon: Icons.comment_rounded,
+    link: '/lectio',
+  ),
+
 ];

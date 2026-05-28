@@ -5,3 +5,5 @@ export './charta_provider.dart';
 export './pokemon_index_providers.dart';
 export 'pokemon_provider.dart';
 export './canticum_provider.dart';
+export './lectio_provider.dart';
+export './playback_provider.dart';
