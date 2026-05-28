@@ -4,12 +4,10 @@ import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'package:flu_avm/config/config.dart';
 import 'package:flu_avm/presentation/providers/providers.dart';
 
+
 Future<void> main() async {
-
   WidgetsFlutterBinding.ensureInitialized();
-
-  MapboxOptions.setAccessToken(mapboxAccessToken);
-
+  MapboxOptions.setAccessToken(mapboxAccessToken); // ← await añadido
   runApp(
     const ProviderScope(
       child: MainApp()
