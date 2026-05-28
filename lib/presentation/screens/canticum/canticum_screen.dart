@@ -1,17 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:just_audio/just_audio.dart';
 import 'dart:math';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_riverpod/legacy.dart';
-
 
 // ============================================================
 // PROVIDERS
 // ============================================================
-
-final audioPlayerProvider = Provider<AudioPlayer>((ref) {
-  return AudioPlayer();
-});
 
 class PlaybackState {
   final bool isPlaying;
@@ -20,6 +15,7 @@ class PlaybackState {
   final String currentSong;
   final String currentSongUrl;
   final bool isLoading;
+  final String? error;
 
   PlaybackState({
     required this.isPlaying,
@@ -28,6 +24,7 @@ class PlaybackState {
     required this.currentSong,
     required this.currentSongUrl,
     required this.isLoading,
+    this.error,
   });
 
   PlaybackState copyWith({
@@ -37,6 +34,7 @@ class PlaybackState {
     String? currentSong,
     String? currentSongUrl,
     bool? isLoading,
+    String? error,
   }) {
     return PlaybackState(
       isPlaying: isPlaying ?? this.isPlaying,
@@ -45,86 +43,74 @@ class PlaybackState {
       currentSong: currentSong ?? this.currentSong,
       currentSongUrl: currentSongUrl ?? this.currentSongUrl,
       isLoading: isLoading ?? this.isLoading,
+      error: error,
     );
   }
 }
 
 class PlaybackNotifier extends StateNotifier<PlaybackState> {
-  final AudioPlayer _audioPlayer;
-  
-  PlaybackNotifier(this._audioPlayer) : super(PlaybackState(
+  PlaybackNotifier() : super(PlaybackState(
     isPlaying: false,
     position: Duration.zero,
     duration: Duration.zero,
     currentSong: 'Selecciona una canción',
     currentSongUrl: '',
     isLoading: false,
-  )) {
-    _setupListeners();
-  }
-
-  void _setupListeners() {
-    _audioPlayer.positionStream.listen((position) {
-      if (!mounted) return;
-      state = state.copyWith(position: position);
-    });
-
-    _audioPlayer.durationStream.listen((duration) {
-      if (!mounted) return;
-      state = state.copyWith(duration: duration ?? Duration.zero);
-    });
-
-    _audioPlayer.playerStateStream.listen((playerState) {
-      if (!mounted) return;
-      final isPlaying = playerState.playing;
-      state = state.copyWith(isPlaying: isPlaying);
-    });
-  }
-
-  Future<void> playPause() async {
-    if (state.isPlaying) {
-      await _audioPlayer.pause();
-    } else {
-      await _audioPlayer.play();
-    }
-  }
+    error: null,
+  ));
 
   Future<void> playSong(String url, String title) async {
     try {
-      state = state.copyWith(isLoading: true);
-      await _audioPlayer.setUrl(url);
-      await _audioPlayer.play();
-      state = state.copyWith(
-        isPlaying: true,
-        currentSong: title,
-        currentSongUrl: url,
-        isLoading: false,
-      );
+      print('🎵 Abriendo: $title');
+      print('🔗 URL: $url');
+      
+      state = state.copyWith(isLoading: true, error: null);
+      
+      final uri = Uri.parse(url);
+      
+      if (await canLaunchUrl(uri)) {
+        await launchUrl(
+          uri, 
+          mode: LaunchMode.externalApplication,
+        );
+        state = state.copyWith(
+          isPlaying: true,
+          currentSong: title,
+          currentSongUrl: url,
+          isLoading: false,
+          error: null,
+        );
+        print('✅ Navegador abierto para: $title');
+      } else {
+        throw Exception('No se puede abrir la URL: $url');
+      }
+      
     } catch (e) {
-      debugPrint('Error playing song: $e');
-      state = state.copyWith(isLoading: false);
+      print('❌ Error: $e');
+      state = state.copyWith(
+        isLoading: false,
+        error: 'No se pudo abrir: $title',
+      );
     }
   }
 
-  Future<void> seekTo(Duration position) async {
-    await _audioPlayer.seek(position);
+  Future<void> playPause() async {
+    // Mostrar mensaje informativo
+    print('ℹ️ Use los controles del navegador para pausar/reanudar');
   }
 
   Future<void> stop() async {
-    await _audioPlayer.stop();
-    state = state.copyWith(isPlaying: false, position: Duration.zero);
+    print('ℹ️ Cierre el navegador para detener la reproducción');
+    state = state.copyWith(isPlaying: false);
   }
 
-  @override
-  void dispose() {
-    _audioPlayer.dispose();
-    super.dispose();
+  Future<void> seekTo(Duration position) async {
+    print('ℹ️ Use los controles del navegador para buscar');
   }
 }
 
 final playbackProvider = StateNotifierProvider<PlaybackNotifier, PlaybackState>((ref) {
-  final audioPlayer = ref.read(audioPlayerProvider);
-  return PlaybackNotifier(audioPlayer);
+  return PlaybackNotifier();
 });
 
 // ============================================================
@@ -144,19 +130,10 @@ class _AeroPalette {
     [Color(0xFF60B8F0), Color(0xFF1E7FC4)],
     [Color(0xFF4DD9A0), Color(0xFF1CA872)],
   ];
-
-  static const pieColors = [
-    Color(0xFF29B6E8),
-    Color(0xFF3ECFA0),
-    Color(0xFF5B8FE8),
-    Color(0xFF60B8F0),
-    Color(0xFF27C48A),
-    Color(0xFF39C9B0),
-  ];
 }
 
 // ============================================================
-// CANCIONES DE EJEMPLO (Música sin copyright)
+// CANCIONES DE EJEMPLO
 // ============================================================
 
 class SongItem {
@@ -326,13 +303,11 @@ class _MainPlayer extends StatelessWidget {
   final PlaybackState playbackState;
   final VoidCallback onPlayPause;
   final VoidCallback onStop;
-  final Function(Duration) onSeek;
 
   const _MainPlayer({
     required this.playbackState,
     required this.onPlayPause,
     required this.onStop,
-    required this.onSeek,
   });
 
   String _formatDuration(Duration duration) {
@@ -361,7 +336,6 @@ class _MainPlayer extends StatelessWidget {
         ),
         child: Column(
           children: [
-            // Arte del álbum
             Container(
               margin: const EdgeInsets.all(20),
               height: 180,
@@ -404,14 +378,11 @@ class _MainPlayer extends StatelessWidget {
                     ),
                   if (playbackState.isLoading)
                     const Center(
-                      child: CircularProgressIndicator(
-                        color: Colors.white,
-                      ),
+                      child: CircularProgressIndicator(color: Colors.white),
                     ),
                 ],
               ),
             ),
-            // Información de la canción
             Column(
               children: [
                 Text(
@@ -421,7 +392,9 @@ class _MainPlayer extends StatelessWidget {
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
                     letterSpacing: 0.5,
+                    shadows: [Shadow(color: Colors.black26, blurRadius: 4)],
                   ),
+                  textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 4),
                 Text(
@@ -433,45 +406,31 @@ class _MainPlayer extends StatelessWidget {
                 ),
               ],
             ),
-            // Barra de progreso
-            Padding(
-              padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
-              child: Column(
+            const SizedBox(height: 16),
+            // Mensaje informativo
+            Container(
+              margin: const EdgeInsets.symmetric(horizontal: 20),
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Slider(
-                    value: playbackState.position.inSeconds.toDouble(),
-                    max: playbackState.duration.inSeconds.toDouble(),
-                    activeColor: Colors.white,
-                    inactiveColor: Colors.white.withOpacity(0.3),
-                    onChanged: (value) {
-                      onSeek(Duration(seconds: value.toInt()));
-                    },
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          _formatDuration(playbackState.position),
-                          style: TextStyle(
-                            color: Colors.white.withOpacity(0.7),
-                            fontSize: 12,
-                          ),
-                        ),
-                        Text(
-                          _formatDuration(playbackState.duration),
-                          style: TextStyle(
-                            color: Colors.white.withOpacity(0.7),
-                            fontSize: 12,
-                          ),
-                        ),
-                      ],
+                  Icon(Icons.info_outline, color: Colors.white.withOpacity(0.7), size: 16),
+                  const SizedBox(width: 8),
+                  Text(
+                    'La música se abrirá en tu navegador',
+                    style: TextStyle(
+                      color: Colors.white.withOpacity(0.7),
+                      fontSize: 12,
                     ),
                   ),
                 ],
               ),
             ),
+            const SizedBox(height: 16),
             // Botones de control
             Padding(
               padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
@@ -479,8 +438,15 @@ class _MainPlayer extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   _GlassButton(
-                    icon: Icons.skip_previous_rounded,
-                    onTap: () {},
+                    icon: Icons.open_in_browser_rounded,
+                    onTap: () {
+                      if (playbackState.currentSongUrl.isNotEmpty) {
+                        final uri = Uri.parse(playbackState.currentSongUrl);
+                        canLaunchUrl(uri).then((canLaunch) {
+                          if (canLaunch) launchUrl(uri, mode: LaunchMode.externalApplication);
+                        });
+                      }
+                    },
                     size: 50,
                   ),
                   const SizedBox(width: 20),
@@ -553,7 +519,6 @@ class _PlaylistTile extends StatelessWidget {
           ),
           child: Row(
             children: [
-              // Avatar / número
               Container(
                 width: 36,
                 height: 36,
@@ -576,7 +541,6 @@ class _PlaylistTile extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 14),
-              // Información
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -600,7 +564,6 @@ class _PlaylistTile extends StatelessWidget {
                   ],
                 ),
               ),
-              // Indicador de reproducción
               if (isPlaying)
                 Container(
                   width: 30,
@@ -609,7 +572,7 @@ class _PlaylistTile extends StatelessWidget {
                     shape: BoxShape.circle,
                     color: Colors.white.withOpacity(0.25),
                   ),
-                  child: const Icon(Icons.volume_up_rounded, color: Colors.white, size: 16),
+                  child: const Icon(Icons.play_circle_rounded, color: Colors.white, size: 16),
                 ),
             ],
           ),
@@ -725,7 +688,6 @@ class _CanticumScreenState extends ConsumerState<CanticumScreen> {
         ),
         child: Stack(
           children: [
-            // Burbujas decorativas Aero
             _AeroBubble(left: -40, top: 80, size: 180, opacity: 0.12),
             _AeroBubble(right: -60, top: 200, size: 220, opacity: 0.10),
             _AeroBubble(left: 30, bottom: 120, size: 150, opacity: 0.09),
@@ -736,23 +698,49 @@ class _CanticumScreenState extends ConsumerState<CanticumScreen> {
               child: Column(
                 children: [
                   const SizedBox(height: 8),
-                  // Visualizador de audio
                   _AudioVisualizer(isPlaying: playbackState.isPlaying),
                   const SizedBox(height: 20),
-                  // Reproductor principal
                   _MainPlayer(
                     playbackState: playbackState,
                     onPlayPause: () => ref.read(playbackProvider.notifier).playPause(),
                     onStop: () => ref.read(playbackProvider.notifier).stop(),
-                    onSeek: (position) => ref.read(playbackProvider.notifier).seekTo(position),
                   ),
                   const SizedBox(height: 20),
-                  // Lista de reproducción
                   _PlaylistSection(
                     songs: availableSongs,
                     currentSongTitle: playbackState.currentSong,
                     onSongSelected: (song) {
-                      ref.read(playbackProvider.notifier).playSong(song.url, song.title);
+                      // Mostrar diálogo de confirmación
+                      showDialog(
+                        context: context,
+                        builder: (ctx) => AlertDialog(
+                          backgroundColor: const Color(0xFF1A5580),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          title: const Text(
+                            'Abrir en navegador',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                          content: Text(
+                            '¿Reproducir "${song.title}" en tu navegador?',
+                            style: TextStyle(color: Colors.white.withOpacity(0.9)),
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(ctx),
+                              child: const Text('Cancelar', style: TextStyle(color: Colors.white70)),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                Navigator.pop(ctx);
+                                ref.read(playbackProvider.notifier).playSong(song.url, song.title);
+                              },
+                              child: const Text('Abrir', style: TextStyle(color: Colors.white)),
+                            ),
+                          ],
+                        ),
+                      );
                     },
                   ),
                 ],
