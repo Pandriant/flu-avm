@@ -2,10 +2,10 @@ import '../../../presentation/screens/screens.dart';
 import 'package:go_router/go_router.dart';
 
 final appRouter = GoRouter(
-  initialLocation: '/splash',
+  initialLocation: '/satus',
   routes: [
     GoRoute(
-      path: '/splash',                          
+      path: '/satus',                          
       builder: (context, state) => const SatusScreen(),
     ),
     GoRoute(
@@ -32,6 +32,9 @@ final appRouter = GoRouter(
           },
            )
       ]
-      )
+      ),
+      GoRoute(path: '/canticum',
+      builder: (context, state)=> const CanticumScreen()
+      ),
   ]
 );

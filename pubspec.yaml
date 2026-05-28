@@ -17,6 +17,7 @@ dependencies:
   google_fonts: ^8.1.0
   pie_chart: ^5.4.0
   socket_io_client: ^3.1.4
+  just_audio: ^0.9.37
 
 dev_dependencies:
   flutter_launcher_icons: ^0.14.4
