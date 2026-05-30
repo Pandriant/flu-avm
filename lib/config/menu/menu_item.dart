@@ -49,6 +49,12 @@ const appMenuItems = <MenuItem>[
     subtitulus: 'Análisis de comentarios',
     icon: Icons.comment_rounded,
     link: '/lectio',
-  ),
+    ),
+    MenuItem(
+    titulus: 'Animal',
+    subtitulus: 'Perro, gato o conejo',
+    link: '/animal',
+    icon: Icons.pets,
+    ),
 
 ];

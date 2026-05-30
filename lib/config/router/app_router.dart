@@ -41,5 +41,9 @@ final appRouter = GoRouter(
       name: 'lectio',
       builder: (context, state) => const LectioScreen(),
     ),
+    GoRoute(
+    path: '/animal',
+    builder: (context, state) => const AnimalScreen(),
+    ),
   ]
 );
